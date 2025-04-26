@@ -1,24 +1,70 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Upload X-Ray</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X-ray Trainer</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { color: #4CAF50; }
+    .form-container { max-width: 600px; margin: 0 auto; }
+    input, button { width: 100%; padding: 10px; margin: 10px 0; }
+    button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+  </style>
 </head>
 <body>
-  <h1>📤 Upload New X-Ray</h1>
-
-  <div class="upload-container">
+  <h1>X-ray Trainer</h1>
+  <div class="form-container">
     <form id="uploadForm">
-      <input type="file" id="xrayImage" accept="image/*" required>
+      <input type="file" id="xrayImage" required accept="image/*">
       <input type="text" id="diagnosis" placeholder="Enter diagnosis" required>
-      <div id="preview"></div>
-      <button type="submit">Upload</button>
+      <button type="submit">Upload X-ray</button>
     </form>
-    <a href="index.html" class="back-btn">⬅️ Back to Dashboard</a>
   </div>
 
-  <script src="upload.js"></script>
+  <!-- Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.0/dist/supabase.min.js"></script>
+  <script>
+    // Initialize Supabase
+    const supabase = createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY');
+
+    // Handle form submission
+    const uploadForm = document.getElementById('uploadForm');
+    uploadForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const file = document.getElementById('xrayImage').files[0];
+      const diagnosis = document.getElementById('diagnosis').value.trim();
+
+      if (!file || !diagnosis) {
+        alert('Please select an image and enter a diagnosis.');
+        return;
+      }
+
+      // Upload image to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('xrays')
+        .upload('xrays/' + file.name, file);
+
+      if (error) {
+        console.error('Error uploading image:', error);
+        alert('Upload failed, try again.');
+        return;
+      }
+
+      // Get the URL of the uploaded image
+      const fileURL = supabase.storage.from('xrays').getPublicUrl(data.path).publicURL;
+
+      // Save diagnosis and image URL to Supabase Database (optional)
+      // For now, we'll just log the URL and diagnosis
+      console.log('✅ Uploaded!', fileURL, diagnosis);
+
+      // Display success message
+      alert('✅ X-ray uploaded successfully!');
+      uploadForm.reset();
+    });
+  </script>
 </body>
 </html>

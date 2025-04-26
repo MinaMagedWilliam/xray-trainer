@@ -1,24 +1,13 @@
-const imageInput = document.getElementById('xrayImage');
-const previewDiv = document.getElementById('preview');
-const uploadForm = document.getElementById('uploadForm');
-
-// Preview selected image
-imageInput.addEventListener('change', function () {
-  const file = this.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      previewDiv.innerHTML = `<img src="${e.target.result}" style="width: 100%; margin-top: 10px; border-radius: 8px;">`;
-    };
-    reader.readAsDataURL(file);
-  }
-});
+// Initialize Supabase
+const { createClient } = supabase;
+const supabase = createClient('https://rgdqkqtncubgshdyofzp.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZHFrcXRuY3ViZ3NoZHlvZnpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2OTM1NzEsImV4cCI6MjA2MTI2OTU3MX0.OXXiTLSYLFvswyXbEsUXJUdmqEcB84f8v6XzOsiw5Zo');
 
 // Handle form submission
-uploadForm.addEventListener('submit', function (e) {
+const uploadForm = document.getElementById('uploadForm');
+uploadForm.addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  const file = imageInput.files[0];
+  const file = document.getElementById('xrayImage').files[0];
   const diagnosis = document.getElementById('diagnosis').value.trim();
 
   if (!file || !diagnosis) {
@@ -26,10 +15,25 @@ uploadForm.addEventListener('submit', function (e) {
     return;
   }
 
-  // Here, normally you would upload to Firebase/Supabase
-  alert('✅ (Simulation) Uploaded successfully!\n\n(Real upload needs Firebase/Supabase)');
+  // Upload image to Supabase Storage
+  const { data, error } = await supabase.storage
+    .from('xrays')
+    .upload('xrays/' + file.name, file);
 
-  // Reset form
+  if (error) {
+    console.error('Error uploading image:', error);
+    alert('Upload failed, try again.');
+    return;
+  }
+
+  // Get the URL of the uploaded image
+  const fileURL = supabase.storage.from('xrays').getPublicUrl(data.path).publicURL;
+
+  // Save diagnosis and image URL to Supabase Database (optional)
+  // For now, we'll just log the URL and diagnosis
+  console.log('✅ Uploaded!', fileURL, diagnosis);
+
+  // Display success message
+  alert('✅ X-ray uploaded successfully!');
   uploadForm.reset();
-  previewDiv.innerHTML = '';
 });
