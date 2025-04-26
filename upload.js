@@ -37,3 +37,8 @@ uploadForm.addEventListener('submit', async function (e) {
   alert('✅ X-ray uploaded successfully!');
   uploadForm.reset();
 });
+if (error) {
+  console.error('Error uploading image:', error.message);
+  alert('Upload failed: ' + error.message);
+  return;
+}
