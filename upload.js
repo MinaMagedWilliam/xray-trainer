@@ -1,6 +1,8 @@
+
 // Initialize Supabase
-const { createClient } = supabase;
-const supabase = createClient('https://rgdqkqtncubgshdyofzp.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZHFrcXRuY3ViZ3NoZHlvZnpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2OTM1NzEsImV4cCI6MjA2MTI2OTU3MX0.OXXiTLSYLFvswyXbEsUXJUdmqEcB84f8v6XzOsiw5Zo');
+const supabaseUrl = 'https://rgdqkqtncubgshdyofzp.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZHFrcXRuY3ViZ3NoZHlvZnpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2OTM1NzEsImV4cCI6MjA2MTI2OTU3MX0.OXXiTLSYLFvswyXbEsUXJUdmqEcB84f8v6XzOsiw5Zo';
+const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
 // Handle form submission
 const uploadForm = document.getElementById('uploadForm');
@@ -18,27 +20,19 @@ uploadForm.addEventListener('submit', async function (e) {
   // Upload image to Supabase Storage
   const { data, error } = await supabase.storage
     .from('xrays')
-    .upload('xrays/' + file.name, file);
+    .upload(file.name, file);
 
   if (error) {
-    console.error('Error uploading image:', error);
-    alert('Upload failed, try again.');
+    console.error('Error uploading image:', error.message);
+    alert('Upload failed: ' + error.message);
     return;
   }
 
   // Get the URL of the uploaded image
   const fileURL = supabase.storage.from('xrays').getPublicUrl(data.path).publicURL;
 
-  // Save diagnosis and image URL to Supabase Database (optional)
-  // For now, we'll just log the URL and diagnosis
   console.log('✅ Uploaded!', fileURL, diagnosis);
-
-  // Display success message
   alert('✅ X-ray uploaded successfully!');
+
   uploadForm.reset();
 });
-if (error) {
-  console.error('Error uploading image:', error.message);
-  alert('Upload failed: ' + error.message);
-  return;
-}
