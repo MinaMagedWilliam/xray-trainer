@@ -8,38 +8,16 @@ client
 // Initialize storage service
 const storage = new Appwrite.Storage(client);
 
-// Handle upload form submission
-const uploadForm = document.getElementById('uploadForm');
-uploadForm.addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  // Get the selected file and diagnosis
-  const file = document.getElementById('xrayImage').files[0];
-  const diagnosis = document.getElementById('diagnosis').value.trim();
-
-  if (!file || !diagnosis) {
-    alert('Please select an image and enter a diagnosis.');
-    return;
-  }
-
-  try {
-    // Upload the file to Appwrite Storage
-    const response = await storage.createFile('680d36a3002343bdd2ed', 'unique()', file); // Bucket ID
-    console.log('✅ Uploaded!', response);
-    alert('✅ X-ray uploaded successfully!');
-    uploadForm.reset();
-  } catch (error) {
-    console.error('Error uploading image:', error.message);
-    alert('Upload failed: ' + error.message);
-  }
-});
-
 // Test Mode - Fetch random X-ray image
 const testModeButton = document.getElementById('testModeButton');
 testModeButton.addEventListener('click', async function () {
   try {
     // Fetch list of all X-ray files
     const files = await storage.listFiles('680d36a3002343bdd2ed'); // Bucket ID
+    if (files.files.length === 0) {
+      alert('No X-ray images found!');
+      return;
+    }
 
     // Pick a random file
     const randomFile = files.files[Math.floor(Math.random() * files.files.length)];
@@ -56,6 +34,47 @@ testModeButton.addEventListener('click', async function () {
     }
   } catch (error) {
     console.error('Error fetching files:', error.message);
+    alert('Failed to fetch X-ray files: ' + error.message);
+  }
+});
+
+// Study Mode - Display all X-rays and diagnoses
+const studyModeButton = document.getElementById('studyModeButton');
+studyModeButton.addEventListener('click', async function () {
+  try {
+    // Fetch list of all X-ray files
+    const files = await storage.listFiles('680d36a3002343bdd2ed'); // Bucket ID
+    if (files.files.length === 0) {
+      alert('No X-ray images found!');
+      return;
+    }
+
+    // Create a container for the images and diagnoses
+    const studyContainer = document.getElementById('studyContainer');
+    studyContainer.innerHTML = ''; // Clear existing content
+
+    // Loop through all files and display them
+    files.files.forEach(file => {
+      const div = document.createElement('div');
+      div.classList.add('study-item');
+
+      const img = document.createElement('img');
+      img.src = file.url;
+      img.alt = 'X-ray Image';
+      img.style.width = '100px';
+      img.style.height = 'auto';
+
+      const diagnosisInput = document.createElement('input');
+      diagnosisInput.type = 'text';
+      diagnosisInput.placeholder = 'Enter diagnosis';
+
+      div.appendChild(img);
+      div.appendChild(diagnosisInput);
+      studyContainer.appendChild(div);
+    });
+
+  } catch (error) {
+    console.error('Error fetching files for study mode:', error.message);
     alert('Failed to fetch X-ray files: ' + error.message);
   }
 });
