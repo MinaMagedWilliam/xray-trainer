@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload X-Ray</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>📤 Upload New X-Ray</h1>
+
+  <div class="upload-container">
+    <form id="uploadForm">
+      <input type="file" id="xrayImage" accept="image/*" required>
+      <input type="text" id="diagnosis" placeholder="Enter diagnosis" required>
+      <div id="preview"></div>
+      <button type="submit">Upload</button>
+    </form>
+    <a href="index.html" class="back-btn">⬅️ Back to Dashboard</a>
+  </div>
+
+  <script src="upload.js"></script>
+</body>
+</html>
