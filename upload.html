@@ -4,19 +4,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>X-ray Trainer Dashboard</title>
+  <title>X-ray Trainer Dashboard (Appwrite)</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { color: #4CAF50; text-align: center; }
+    h1 { color: #2196F3; text-align: center; }
     .form-container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
     input, button { width: 100%; padding: 10px; margin: 10px 0; }
-    button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
-    button:hover { background-color: #45a049; }
+    button { background-color: #2196F3; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #1976D2; }
   </style>
 </head>
 <body>
 
-  <h1>X-ray Trainer Dashboard</h1>
+  <h1>X-ray Trainer Dashboard (Appwrite)</h1>
   <div class="form-container">
     <form id="uploadForm">
       <input type="file" id="xrayImage" required accept="image/*">
@@ -25,8 +25,8 @@
     </form>
   </div>
 
-  <!-- Load Supabase Client Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.0/dist/supabase.min.js"></script>
+  <!-- Load Appwrite Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
 
   <!-- Load our custom JavaScript -->
   <script src="upload.js"></script>
