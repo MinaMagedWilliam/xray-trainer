@@ -21,7 +21,7 @@ uploadForm.addEventListener('submit', async function (e) {
 
   try {
     // Upload image to Appwrite Storage
-    const response = await storage.createFile('YOUR_BUCKET_ID', 'unique()', file);
+    const response = await storage.createFile('680d36a3002343bdd2ed', 'unique()', file);
     console.log('✅ Uploaded!', response);
     alert('✅ X-ray uploaded successfully!');
     uploadForm.reset();
