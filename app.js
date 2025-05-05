@@ -1,80 +1,77 @@
-// Initialize Appwrite client
-const client = new Appwrite.Client();
-client
-    .setEndpoint('https://fra.cloud.appwrite.io/v1') // Appwrite endpoint
-    .setProject('680d35f30021babe5cc9') // Your Appwrite project ID
+const client = new Appwrite.Client()
+    .setEndpoint('https://fra.cloud.appwrite.io/v1')
+    .setProject('680d35f30021babe5cc9')
     .setKey('standard_ffedfecc971f828de454d03ec0d26988684e5dab152554a91e952b9f03b82b19dedc85b7e671d14d8e11d64c96cb9df2eb882be6c65d1abfe81bdfc516b7e6ac36c30a8f93f86112f2a9a65e67d31e3d24d7d5717bac2d5f96ffa0d5825322fe76aec8978fe93ff90234184b151631670f5670a4634aa519481dbfd00fb5d8bc');
 
-// Initialize storage service
 const storage = new Appwrite.Storage(client);
+const bucketId = '680d36a3002343bdd2ed';
 
-// Test Mode - Fetch random X-ray image
-const testModeButton = document.getElementById('testModeButton');
-testModeButton.addEventListener('click', async function () {
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const file = document.getElementById('xrayImage').files[0];
+  const diagnosis = document.getElementById('diagnosis').value;
+
   try {
-    // Fetch list of all X-ray files
-    const files = await storage.listFiles('680d36a3002343bdd2ed'); // Bucket ID
-    if (files.files.length === 0) {
-      alert('No X-ray images found!');
-      return;
-    }
+    const upload = await storage.createFile(bucketId, Appwrite.ID.unique(), file, [
+      Appwrite.Permission.read(Appwrite.Role.any()),
+    ]);
 
-    // Pick a random file
-    const randomFile = files.files[Math.floor(Math.random() * files.files.length)];
-
-    // Display the image
-    const imageDisplay = document.getElementById('xrayDisplay');
-    imageDisplay.src = randomFile.url;
-    imageDisplay.style.display = 'block';
-
-    // Prompt for diagnosis
-    const diagnosis = prompt('What is the diagnosis for this X-ray?');
-    if (diagnosis) {
-      alert('You typed: ' + diagnosis);  // Add logic to compare it with the correct diagnosis
-    }
-  } catch (error) {
-    console.error('Error fetching files:', error.message);
-    alert('Failed to fetch X-ray files: ' + error.message);
+    alert('X-ray uploaded! Note: Save diagnosis separately in a database later.');
+    document.getElementById('uploadForm').reset();
+  } catch (err) {
+    console.error(err);
+    alert('Upload failed!');
   }
 });
 
-// Study Mode - Display all X-rays and diagnoses
-const studyModeButton = document.getElementById('studyModeButton');
-studyModeButton.addEventListener('click', async function () {
+// Test Mode
+document.getElementById('testModeButton').addEventListener('click', async () => {
   try {
-    // Fetch list of all X-ray files
-    const files = await storage.listFiles('680d36a3002343bdd2ed'); // Bucket ID
-    if (files.files.length === 0) {
-      alert('No X-ray images found!');
-      return;
-    }
+    const result = await storage.listFiles(bucketId);
+    if (result.files.length === 0) return alert('No X-rays uploaded yet.');
 
-    // Create a container for the images and diagnoses
-    const studyContainer = document.getElementById('studyContainer');
-    studyContainer.innerHTML = ''; // Clear existing content
+    const randomFile = result.files[Math.floor(Math.random() * result.files.length)];
+    const previewURL = `https://fra.cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${randomFile.$id}/view?project=680d35f30021babe5cc9`;
 
-    // Loop through all files and display them
-    files.files.forEach(file => {
-      const div = document.createElement('div');
-      div.classList.add('study-item');
+    const img = document.getElementById('xrayDisplay');
+    img.src = previewURL;
+    img.style.display = 'block';
+
+    const guess = prompt('What is your diagnosis?');
+    alert(`You guessed: ${guess}\n(Feedback system coming soon!)`);
+  } catch (err) {
+    console.error(err);
+    alert('Error in Test Mode');
+  }
+});
+
+// Study Mode
+document.getElementById('studyModeButton').addEventListener('click', async () => {
+  const container = document.getElementById('studyContainer');
+  container.innerHTML = '';
+
+  try {
+    const result = await storage.listFiles(bucketId);
+    if (result.files.length === 0) return alert('No X-rays uploaded yet.');
+
+    result.files.forEach((file) => {
+      const item = document.createElement('div');
+      item.className = 'study-item';
 
       const img = document.createElement('img');
-      img.src = file.url;
-      img.alt = 'X-ray Image';
-      img.style.width = '100px';
-      img.style.height = 'auto';
+      img.src = `https://fra.cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${file.$id}/view?project=680d35f30021babe5cc9`;
+      img.alt = 'X-ray';
 
-      const diagnosisInput = document.createElement('input');
-      diagnosisInput.type = 'text';
-      diagnosisInput.placeholder = 'Enter diagnosis';
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Type diagnosis';
 
-      div.appendChild(img);
-      div.appendChild(diagnosisInput);
-      studyContainer.appendChild(div);
+      item.appendChild(img);
+      item.appendChild(input);
+      container.appendChild(item);
     });
-
-  } catch (error) {
-    console.error('Error fetching files for study mode:', error.message);
-    alert('Failed to fetch X-ray files: ' + error.message);
+  } catch (err) {
+    console.error(err);
+    alert('Error loading study images');
   }
 });
