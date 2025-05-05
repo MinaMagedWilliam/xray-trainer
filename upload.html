@@ -1,43 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>X-ray Trainer Dashboard (Appwrite)</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { color: #2196F3; text-align: center; }
-    .form-container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
+    h1 { text-align: center; color: #007BFF; }
+    .form-container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
     input, button { width: 100%; padding: 10px; margin: 10px 0; }
-    button { background-color: #2196F3; color: white; border: none; cursor: pointer; }
-    button:hover { background-color: #1976D2; }
-    img { max-width: 100%; margin-top: 20px; display: none; }
-    #studyContainer { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
-    .study-item { max-width: 200px; text-align: center; }
-    .study-item input { margin-top: 10px; width: 100%; padding: 8px; }
+    button { background: #007BFF; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    img { display: block; margin: 20px auto; max-width: 100%; }
+    #studyContainer { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; justify-content: center; }
+    .study-item { width: 200px; border: 1px solid #ddd; padding: 10px; border-radius: 8px; text-align: center; }
+    .study-item img { width: 100%; height: auto; }
   </style>
 </head>
 <body>
 
-  <h1>X-ray Trainer Dashboard (Appwrite)</h1>
+  <h1>X-ray Trainer Dashboard</h1>
   <div class="form-container">
     <form id="uploadForm">
-      <input type="file" id="xrayImage" required accept="image/*">
-      <input type="text" id="diagnosis" placeholder="Enter diagnosis" required>
+      <input type="file" id="xrayImage" accept="image/*" required />
+      <input type="text" id="diagnosis" placeholder="Enter diagnosis" required />
       <button type="submit">Upload X-ray</button>
     </form>
 
     <button id="testModeButton">Test Mode (Random X-ray)</button>
-    <img id="xrayDisplay" src="" alt="Random X-ray" />
+    <img id="xrayDisplay" src="" alt="X-ray Image" style="display:none;" />
 
     <button id="studyModeButton">Study Mode (View All X-rays)</button>
-    <div id="studyContainer"></div> <!-- Container for Study Mode -->
+    <div id="studyContainer"></div>
   </div>
 
-  <!-- Load Appwrite Client Library -->
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
-
-  <!-- Load our custom JavaScript -->
   <script src="app.js"></script>
+
 </body>
 </html>
